@@ -1,0 +1,102 @@
+/* ========================= */
+/* ZONA POLLOS */
+/* ========================= */
+
+#pedidos-zona-pollos{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap:16px;
+}
+
+.pedido-cocina{
+  background:#ffffff;
+  border:3px solid var(--orange);
+  border-radius:14px;
+  padding:16px;
+  box-shadow:0 6px 14px rgba(0,0,0,.12);
+}
+
+.pedido-cocina h2{
+  margin:0;
+  font-size:26px;
+  color:var(--orange-dark);
+}
+
+.pedido-cocina strong{
+  font-size:18px;
+  display:block;
+  margin-top:6px;
+}
+
+.pedido-cocina span{
+  font-size:16px;
+  color:var(--muted);
+}
+
+.pedido-cocina ul{
+  margin-top:12px;
+  padding-left:18px;
+}
+
+.pedido-cocina li{
+  font-size:20px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+/* ========================= */
+/* TELE CLIENTE */
+/* ========================= */
+
+.turno{
+  background:#fff7ee;
+  border:6px solid var(--orange);
+  border-radius:22px;
+  margin:40px auto;
+  width:80%;
+  max-width:600px;
+  padding:40px;
+  font-size:72px;
+  font-weight:900;
+  color:var(--orange-dark);
+  text-align:center;
+  box-shadow:0 10px 20px rgba(0,0,0,.15);
+  letter-spacing:2px;
+}
+
+/* ========================= */
+/* FULLSCREEN LOOK */
+/* ========================= */
+
+body{
+  background:#fdfdfd;
+}
+
+.brand-bar{
+  font-size:22px;
+  padding:18px 22px;
+}
+
+/* ========================= */
+/* TABLET OPTIMIZATION */
+/* ========================= */
+
+@media(max-width:900px){
+
+  .pedido-cocina{
+    padding:14px;
+  }
+
+  .pedido-cocina h2{
+    font-size:22px;
+  }
+
+  .pedido-cocina li{
+    font-size:18px;
+  }
+
+  .turno{
+    font-size:56px;
+    padding:28px;
+  }
+}

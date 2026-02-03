@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Pedidos Listos</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/css/tele_cliente.css">
+
+</head>
+
+<body>
+
+    <h1>📣 PEDIDOS LISTOS 📣</h1>
+
+    <div id="pedidos" class="grid"></div>
+
+    <!-- RELOJ -->
+    <div class="footer-clock" id="clock"></div>
+
+    <!-- JS -->
+    <script src="/static/js/tele_cliente.js"></script>
+
+    <!-- RELOJ -->
+    <script>
+        function actualizarHora(){
+            const reloj = document.getElementById("clock");
+            const ahora = new Date();
+            reloj.innerText = ahora.toLocaleTimeString();
+        }
+        setInterval(actualizarHora, 1000);
+        actualizarHora();
+    </script>
+
+    <!-- KIOSKO FULLSCREEN -->
+    <script>
+        function activarPantallaCompleta() {
+
+            const elem = document.documentElement;
+
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        }
+
+        // Auto fullscreen al cargar
+        setTimeout(activarPantallaCompleta, 800);
+
+        // Reforzar si alguien pulsa ESC
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                activarPantallaCompleta();
+            }
+        });
+    </script>
+
+</body>
+</html>

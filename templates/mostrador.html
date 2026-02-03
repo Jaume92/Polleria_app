@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mostrador</title>
+
+    <link rel="stylesheet" href="/static/css/app.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #222;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            background: #ffffff;
+        }
+
+        .productos button {
+            display: block;
+            width: 100%;
+            margin-bottom: 8px;
+            padding: 10px;
+            background: #eeeeee;
+            color: #000;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .productos button:hover {
+            background: #ddd;
+        }
+
+        .pedido-item {
+            padding: 8px;
+            border-bottom: 1px dashed #ccc;
+            cursor: pointer;
+        }
+
+        .pedido-item:hover {
+            background: #ffe0e0;
+        }
+
+        .actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .actions button {
+            flex: 1;
+            padding: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .confirmar {
+            background: #2e7d32;
+            color: #fff;
+            border: none;
+        }
+
+        .limpiar {
+            background: #8e0000;
+            color: #fff;
+            border: none;
+        }
+
+        .inputs input {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        /* CHECK HORA */
+
+        .hora-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .check-cuadro {
+            width: 26px;
+            height: 26px;
+            border: 2px solid #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .check-cuadro.activo {
+            background: #2e7d32;
+            color: white;
+        }
+
+        /* TOTAL */
+
+        .total-box {
+            margin-top: 10px;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: right;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<h1>MOSTRADOR</h1>
+
+<div class="inputs">
+    <input id="nombre" placeholder="Nombre">
+    <input id="telefono" placeholder="Teléfono">
+
+    <div class="hora-box">
+        <div id="check-hora" class="check-cuadro">✓</div>
+        <input id="hora-input" type="time" disabled>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- PRODUCTOS -->
+    <div class="panel productos">
+        <h2>Productos</h2>
+        <div id="productos"></div>
+    </div>
+
+    <!-- PEDIDO -->
+    <div class="panel">
+        <h2>Pedido actual</h2>
+
+        <div id="pedido-actual">
+            <em>(vacío)</em>
+        </div>
+
+        <div id="total" class="total-box">
+            TOTAL: 0.00 €
+        </div>
+
+        <div class="actions">
+            <button id="limpiar-pedido" class="limpiar">Limpiar</button>
+            <button id="confirmar-pedido" class="confirmar">Confirmar</button>
+        </div>
+    </div>
+
+</div>
+
+<script src="/static/js/mostrador.js"></script>
+
+</body>
+</html>

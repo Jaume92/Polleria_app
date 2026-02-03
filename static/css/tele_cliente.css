@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(180deg, #fff6eb, #ffe0b2);
+}
+
+/* =========================
+   TITULO
+========================= */
+
+h1 {
+    text-align: center;
+    font-size: 52px;
+    color: #bf360c;
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+}
+
+/* =========================
+   GRID
+========================= */
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 25px;
+}
+
+/* =========================
+   TARJETA PEDIDO
+========================= */
+
+.pedido {
+    background: white;
+    border-radius: 18px;
+    padding: 22px 15px;
+    text-align: center;
+    border: 6px solid #ff9800;
+    box-shadow: 0 12px 22px rgba(0,0,0,0.25);
+}
+
+/* =========================
+   NUMERO PEDIDO
+========================= */
+
+.pedido h2 {
+    font-size: 72px;
+    margin: 0;
+    color: #d84315;
+}
+
+/* =========================
+   HORA
+========================= */
+
+.hora {
+    margin-top: 10px;
+    font-size: 22px;
+    color: #6d4c41;
+}
+
+/* =========================
+   RELOJ INFERIOR
+========================= */
+
+.footer-clock {
+    position: fixed;
+    bottom: 12px;
+    width: 100%;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: #ff9800;
+    letter-spacing: 2px;
+}
+
+/* =========================
+   ZUMBIDO
+========================= */
+
+.animar {
+    animation: vibrar 0.25s ease-in-out 6;
+}
+
+@keyframes vibrar {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    50% { transform: translateX(6px); }
+    75% { transform: translateX(-6px); }
+    100% { transform: translateX(0); }
+}
+
+/* =========================
+   FADE OUT
+========================= */
+
+.fadeout {
+    animation: desaparecer 0.8s forwards;
+}
+
+@keyframes desaparecer {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+}
+
+/* =========================
+   RESPONSIVE TV
+========================= */
+
+@media (max-width: 900px) {
+
+    h1 {
+        font-size: 40px;
+    }
+
+    .pedido h2 {
+        font-size: 54px;
+    }
+}
