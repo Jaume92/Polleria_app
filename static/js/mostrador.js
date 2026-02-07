@@ -1,291 +1,144 @@
-let productos = [];
+// TPV 70/30 - LOGICA SIMPLIFICADA
+let productosDB = [];
 let pedidoActual = [];
-let horaActivada = false;
-let totalPedido = 0;
 
-let productosDiv;
-let pedidoActualDiv;
-let btnConfirmar;
-let btnLimpiar;
-
-let checkHora;
-let inputHora;
-
-// ======================
-// INIT
-// ======================
+// DOM Elements
+let productosDiv, ticketDiv, totalSpan;
+let inputCliente, inputTelefono, btnCobrar, divReloj;
 
 document.addEventListener("DOMContentLoaded", () => {
+    // Referencias DOM
+    productosDiv = document.getElementById("productos-grid");
+    ticketDiv = document.getElementById("ticket-list");
+    totalSpan = document.getElementById("total");
+    inputCliente = document.getElementById("cliente");
+    inputTelefono = document.getElementById("telefono");
+    btnCobrar = document.getElementById("btn-cobrar");
+    divReloj = document.getElementById("reloj");
 
-    productosDiv = document.getElementById("productos");
-    pedidoActualDiv = document.getElementById("pedido-actual");
+    // Listeners
+    btnCobrar.addEventListener("click", cobrarPedido);
 
-    btnConfirmar = document.getElementById("confirmar-pedido");
-    btnLimpiar = document.getElementById("limpiar-pedido");
-
-    checkHora = document.getElementById("check-hora");
-    inputHora = document.getElementById("hora-input");
-
-    // BOTON HORA
-
-    checkHora.addEventListener("click", () => {
-
-        horaActivada = !horaActivada;
-
-        if (horaActivada) {
-            checkHora.classList.add("activo");
-            inputHora.disabled = false;
-        } else {
-            checkHora.classList.remove("activo");
-            inputHora.disabled = true;
-            inputHora.value = "";
-        }
-    });
-
-    btnConfirmar.addEventListener("click", confirmarPedido);
-    btnLimpiar.addEventListener("click", limpiarPedido);
-
-    cargarProductos();
-    renderPedido();
+    // Iniciar
+    iniciarReloj();
+    cargarDatos();
 });
 
-// ======================
-// CARGAR PRODUCTOS
-// ======================
+// =========================================
+// RELOJ
+// =========================================
+function iniciarReloj() {
+    setInterval(() => {
+        const now = new Date();
+        divReloj.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }, 1000);
+}
 
-async function cargarProductos() {
-
+// =========================================
+// DATOS & RENDER
+// =========================================
+async function cargarDatos() {
     try {
-
         const res = await fetch("/api/productos");
-        productos = await res.json();
-
-        productosDiv.innerHTML = "";
-
-        productos.forEach(prod => {
-
-            const btn = document.createElement("button");
-
-            btn.innerText = `${prod.nombre} (${prod.precio.toFixed(2)} €)`;
-
-            btn.onclick = () => agregarProducto(prod);
-
-            productosDiv.appendChild(btn);
-        });
-
+        if (res.ok) {
+            productosDB = await res.json();
+            renderProductos();
+        } else {
+            productosDiv.innerHTML = "Error cargando productos";
+        }
     } catch (e) {
-        console.error("Error cargando productos", e);
+        console.error(e);
+        productosDiv.innerHTML = "Error de conexión";
     }
 }
 
-// ======================
-// PEDIDO
-// ======================
-
-function agregarProducto(producto) {
-
-    pedidoActual.push({
-        nombre: producto.nombre,
-        precio: Number(producto.precio)
+function renderProductos() {
+    productosDiv.innerHTML = "";
+    // Renderizar TODOS los productos (sin categorias)
+    productosDB.forEach(prod => {
+        const btn = document.createElement("button");
+        btn.className = "producto-btn";
+        btn.innerHTML = `
+            <div>${prod.nombre}</div>
+            <small>${Number(prod.precio).toFixed(2)}€</small>
+        `;
+        btn.onclick = () => agregarAlTicket(prod);
+        productosDiv.appendChild(btn);
     });
-
-    totalPedido += Number(producto.precio);
-
-    renderPedido();
 }
 
-// ======================
-// RENDER PEDIDO
-// ======================
-
-function renderPedido() {
-
-    pedidoActualDiv.innerHTML = "";
-
-    if (pedidoActual.length === 0) {
-        pedidoActualDiv.innerHTML = "<em>(vacío)</em>";
-        actualizarTotal();
-        return;
+// =========================================
+// TICKET
+// =========================================
+function agregarAlTicket(prod) {
+    const existe = pedidoActual.find(p => p.id === prod.id);
+    if (existe) {
+        existe.cantidad++;
+    } else {
+        pedidoActual.push({ ...prod, cantidad: 1, precio: Number(prod.precio) });
     }
+    renderTicket();
+}
 
-    const mapa = {};
+function renderTicket() {
+    ticketDiv.innerHTML = "";
+    let total = 0;
 
     pedidoActual.forEach(item => {
+        const subtotal = item.cantidad * item.precio;
+        total += subtotal;
 
-        if (!mapa[item.nombre]) {
-            mapa[item.nombre] = {
-                nombre: item.nombre,
-                precio: item.precio,
-                cantidad: 1
-            };
-        } else {
-            mapa[item.nombre].cantidad++;
-        }
-
+        const row = document.createElement("div");
+        row.className = "ticket-item";
+        row.innerHTML = `
+            <div>${item.nombre} <small>x${item.cantidad}</small></div>
+            <div style="display:flex; gap:10px; align-items:center">
+                <span>${subtotal.toFixed(2)}</span>
+                <span style="color:red; cursor:pointer" onclick="borrarItem(${item.id})">✖</span>
+            </div>
+        `;
+        ticketDiv.appendChild(row);
     });
 
-    const agrupados = Object.values(mapa);
-
-    agrupados.forEach(item => {
-
-        const fila = document.createElement("div");
-        fila.className = "pedido-item";
-
-        const texto = document.createElement("span");
-        texto.innerText = `${item.nombre} x${item.cantidad} — ${(item.precio * item.cantidad).toFixed(2)} €`;
-
-        const borrar = document.createElement("span");
-        borrar.innerText = "❌";
-        borrar.style.color = "red";
-        borrar.style.cursor = "pointer";
-        borrar.style.marginLeft = "10px";
-
-        borrar.onclick = () => eliminarUnidad(item.nombre);
-
-        fila.appendChild(texto);
-        fila.appendChild(borrar);
-
-        pedidoActualDiv.appendChild(fila);
-    });
-
-    actualizarTotal();
+    totalSpan.innerText = total.toFixed(2) + " €";
+    ticketDiv.scrollTop = ticketDiv.scrollHeight;
 }
 
-// ======================
-// ELIMINAR 1 UNIDAD
-// ======================
-
-function eliminarUnidad(nombre) {
-
-    const index = pedidoActual.findIndex(p => p.nombre === nombre);
-
-    if (index !== -1) {
-
-        totalPedido -= pedidoActual[index].precio;
-        pedidoActual.splice(index, 1);
-
-        renderPedido();
-    }
+window.borrarItem = function (id) {
+    pedidoActual = pedidoActual.filter(p => p.id !== id);
+    renderTicket();
 }
 
-// ======================
-// TOTAL
-// ======================
-
-function actualizarTotal() {
-
-    const totalDiv = document.getElementById("total");
-
-    totalPedido = Math.round(totalPedido * 100) / 100;
-
-    totalDiv.innerText = `TOTAL: ${totalPedido.toFixed(2)} €`;
-}
-
-// ======================
-// CONFIRMAR PEDIDO
-// ======================
-
-async function confirmarPedido() {
-
-    if (pedidoActual.length === 0) {
-        alert("No hay productos");
-        return;
-    }
-
-    const nombre = document.getElementById("nombre").value;
-    const telefono = document.getElementById("telefono").value;
-
-    // AGRUPAR PARA BACKEND
-
-    const mapa = {};
-
-    pedidoActual.forEach(item => {
-
-        if (!mapa[item.nombre]) {
-
-            mapa[item.nombre] = {
-                nombre: item.nombre,
-                precio: item.precio,
-                cantidad: 1
-            };
-
-        } else {
-            mapa[item.nombre].cantidad++;
-        }
-
-    });
-
-    const itemsFinal = Object.values(mapa);
-
-    // HORA
-
-    let hora = null;
-
-    if (horaActivada) {
-
-        hora = inputHora.value;
-
-        if (!hora) {
-            alert("Selecciona hora");
-            return;
-        }
-    }
+// =========================================
+// COBRAR
+// =========================================
+async function cobrarPedido() {
+    if (pedidoActual.length === 0) return alert("Ticket vacío");
 
     const payload = {
-        items: itemsFinal,
-        nombre,
-        telefono
+        items: pedidoActual.map(p => ({ id: p.id, cantidad: p.cantidad })),
+        nombre: inputCliente.value || "Cliente TPV",
+        telefono: inputTelefono.value || ""
     };
 
-    if (horaActivada) payload.hora = hora;
-
-    console.log("ENVIANDO:", payload);
-
     try {
-
         const res = await fetch("/api/pedidos", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
 
-        if (!res.ok) {
-            const err = await res.text();
-            console.error("ERROR BACKEND:", err);
-            alert("Error creando pedido (ver consola)");
-            return;
+        if (res.ok) {
+            alert("✓ Cobrado correctamente");
+            pedidoActual = [];
+            inputCliente.value = "";
+            inputTelefono.value = "";
+            renderTicket();
+        } else {
+            alert("Error al guardar pedido");
         }
-
-        // RESET
-
-        pedidoActual = [];
-        totalPedido = 0;
-
-        horaActivada = false;
-        checkHora.classList.remove("activo");
-        inputHora.disabled = true;
-        inputHora.value = "";
-
-        renderPedido();
-
-        alert("Pedido creado ✔");
-
     } catch (e) {
-
-        console.error("ERROR FETCH:", e);
-        alert("Error conexión");
-
+        alert("Error de conexión");
+        console.error(e); // Added error logging
     }
-}
-
-// ======================
-// LIMPIAR
-// ======================
-
-function limpiarPedido() {
-
-    pedidoActual = [];
-    totalPedido = 0;
-
-    renderPedido();
 }

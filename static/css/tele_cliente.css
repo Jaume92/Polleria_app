@@ -1,139 +1,138 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;900&display=swap');
 
-* {
-    box-sizing: border-box;
-}
-
-html, body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+:root {
+    --primary: #ff6b00;
+    --primary-dark: #e65100;
+    --bg-start: #1a1a1a;
+    --bg-end: #2d3436;
+    --card-bg: white;
 }
 
 body {
     margin: 0;
     padding: 20px;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(180deg, #fff6eb, #ffe0b2);
+    font-family: 'Montserrat', sans-serif;
+    background: radial-gradient(circle at center, var(--bg-start), var(--bg-end));
+    color: white;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
-/* =========================
-   TITULO
-========================= */
-
+/* HEADER */
 h1 {
     text-align: center;
-    font-size: 52px;
-    color: #bf360c;
-    margin-bottom: 25px;
-    letter-spacing: 2px;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin: 20px 0 40px;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
-/* =========================
-   GRID
-========================= */
-
+/* GRID */
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 40px;
+    padding: 0 40px;
+    flex: 1;
+    align-content: start;
 }
 
-/* =========================
-   TARJETA PEDIDO
-========================= */
-
+/* CARD */
 .pedido {
-    background: white;
-    border-radius: 18px;
-    padding: 22px 15px;
+    background: var(--card-bg);
+    border-radius: 24px;
+    padding: 20px;
     text-align: center;
-    border: 6px solid #ff9800;
-    box-shadow: 0 12px 22px rgba(0,0,0,0.25);
+    border-bottom: 12px solid var(--primary);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+    transform: perspective(1000px) rotateX(5deg);
+    transition: transform 0.3s;
+    animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* =========================
-   NUMERO PEDIDO
-========================= */
-
-.pedido h2 {
-    font-size: 72px;
-    margin: 0;
-    color: #d84315;
+.pedido.animar {
+    animation: flash 1s infinite alternate;
 }
 
-/* =========================
-   HORA
-========================= */
-
-.hora {
-    margin-top: 10px;
-    font-size: 22px;
-    color: #6d4c41;
-}
-
-/* =========================
-   RELOJ INFERIOR
-========================= */
-
-.footer-clock {
-    position: fixed;
-    bottom: 12px;
-    width: 100%;
-    text-align: center;
-    font-size: 22px;
-    font-weight: 700;
-    color: #ff9800;
-    letter-spacing: 2px;
-}
-
-/* =========================
-   ZUMBIDO
-========================= */
-
-.animar {
-    animation: vibrar 0.25s ease-in-out 6;
-}
-
-@keyframes vibrar {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-6px); }
-    50% { transform: translateX(6px); }
-    75% { transform: translateX(-6px); }
-    100% { transform: translateX(0); }
-}
-
-/* =========================
-   FADE OUT
-========================= */
-
-.fadeout {
-    animation: desaparecer 0.8s forwards;
-}
-
-@keyframes desaparecer {
+@keyframes popIn {
     from {
-        opacity: 1;
-        transform: scale(1);
+        opacity: 0;
+        transform: scale(0.5);
     }
 
     to {
-        opacity: 0;
-        transform: scale(0.85);
+        opacity: 1;
+        transform: scale(1) rotateX(5deg);
     }
 }
 
-/* =========================
-   RESPONSIVE TV
-========================= */
-
-@media (max-width: 900px) {
-
-    h1 {
-        font-size: 40px;
+@keyframes flash {
+    from {
+        box-shadow: 0 0 20px rgba(255, 107, 0, 0.5);
     }
 
-    .pedido h2 {
-        font-size: 54px;
+    to {
+        box-shadow: 0 0 50px rgba(255, 107, 0, 1);
     }
+}
+
+/* NUMERO */
+.pedido h2 {
+    font-size: 6rem;
+    margin: 0;
+    color: #2d3436;
+    line-height: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* HASHTAG */
+.hashtag {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-top: 15px;
+    margin-right: 5px;
+    opacity: 0.8;
+}
+
+/* HORA */
+.hora {
+    margin-top: 10px;
+    font-size: 1.5rem;
+    color: #636e72;
+    font-weight: bold;
+    background: #f1f2f6;
+    padding: 8px 15px;
+    border-radius: 50px;
+    display: inline-block;
+}
+
+/* FADE OUT */
+.fadeout {
+    animation: zoomOut 0.5s forwards;
+}
+
+@keyframes zoomOut {
+    to {
+        opacity: 0;
+        transform: scale(1.2);
+    }
+}
+
+/* FOOTER MARQUEE (Opcional) */
+.footer-info {
+    text-align: center;
+    font-size: 1.2rem;
+    opacity: 0.6;
+    margin-top: auto;
+    padding: 20px;
+    letter-spacing: 2px;
 }

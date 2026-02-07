@@ -23,8 +23,11 @@ async function cargarPedidos() {
             titulo.innerText = `#${pedido.id}`;
             card.appendChild(titulo);
 
+            // DEBUG HORA
+            console.log(`Pedido ${pedido.id} - Hora:`, pedido.hora, "Tipo:", typeof pedido.hora);
+
             // HORA SOLO SI EXISTE
-            if (pedido.hora) {
+            if (pedido.hora && String(pedido.hora).trim() !== "") {
                 const hora = document.createElement("div");
                 hora.className = "hora";
                 hora.innerText = `⏰ ${pedido.hora}`;

@@ -1,102 +1,115 @@
-/* ========================= */
-/* ZONA POLLOS */
-/* ========================= */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;800&display=swap');
 
-#pedidos-zona-pollos{
-  display:grid;
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: 'Inter', sans-serif;
+  background: #111;
+  /* Dark Mode Fondo */
+  color: #eee;
+}
+
+h1 {
+  text-align: center;
+  color: #ff9f43;
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-bottom: 2px solid #333;
+  padding-bottom: 20px;
+}
+
+.grid {
+  display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap:16px;
+  gap: 20px;
 }
 
-.pedido-cocina{
-  background:#ffffff;
-  border:3px solid var(--orange);
-  border-radius:14px;
-  padding:16px;
-  box-shadow:0 6px 14px rgba(0,0,0,.12);
+.pedido {
+  background: #1e1e1e;
+  border-radius: 12px;
+  padding: 0;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  border: 1px solid #333;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.3s ease-out;
 }
 
-.pedido-cocina h2{
-  margin:0;
-  font-size:26px;
-  color:var(--orange-dark);
-}
-
-.pedido-cocina strong{
-  font-size:18px;
-  display:block;
-  margin-top:6px;
-}
-
-.pedido-cocina span{
-  font-size:16px;
-  color:var(--muted);
-}
-
-.pedido-cocina ul{
-  margin-top:12px;
-  padding-left:18px;
-}
-
-.pedido-cocina li{
-  font-size:20px;
-  font-weight:700;
-  margin-bottom:6px;
-}
-
-/* ========================= */
-/* TELE CLIENTE */
-/* ========================= */
-
-.turno{
-  background:#fff7ee;
-  border:6px solid var(--orange);
-  border-radius:22px;
-  margin:40px auto;
-  width:80%;
-  max-width:600px;
-  padding:40px;
-  font-size:72px;
-  font-weight:900;
-  color:var(--orange-dark);
-  text-align:center;
-  box-shadow:0 10px 20px rgba(0,0,0,.15);
-  letter-spacing:2px;
-}
-
-/* ========================= */
-/* FULLSCREEN LOOK */
-/* ========================= */
-
-body{
-  background:#fdfdfd;
-}
-
-.brand-bar{
-  font-size:22px;
-  padding:18px 22px;
-}
-
-/* ========================= */
-/* TABLET OPTIMIZATION */
-/* ========================= */
-
-@media(max-width:900px){
-
-  .pedido-cocina{
-    padding:14px;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
 
-  .pedido-cocina h2{
-    font-size:22px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
+}
 
-  .pedido-cocina li{
-    font-size:18px;
-  }
+/* CABECERA TARJETA */
+.pedido h2 {
+  margin: 0;
+  background: #333;
+  color: #fff;
+  padding: 15px;
+  font-size: 2rem;
+  text-align: center;
+  font-family: 'Roboto Mono', monospace;
+  border-bottom: 2px solid #ff9f43;
+}
 
-  .turno{
-    font-size:56px;
-    padding:28px;
-  }
+/* HORA IMPORTANTE */
+.hora {
+  background: #d35400;
+  color: white;
+  text-align: center;
+  padding: 8px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* LISTA PRODUCTOS */
+ul {
+  list-style: none;
+  padding: 15px;
+  margin: 0;
+  flex: 1;
+}
+
+li {
+  padding: 8px 0;
+  border-bottom: 1px solid #333;
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+li:last-child {
+  border-bottom: none;
+}
+
+/* BOTON */
+button {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: #2ecc71;
+  color: #000;
+  font-size: 1rem;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #27ae60;
+  color: white;
 }

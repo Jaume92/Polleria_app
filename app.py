@@ -10,7 +10,11 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+app = FastAPI()
 
+@app.get("/")
+def root():
+    return {"ok": True}
 # 🧾 IMPRESIÓN
 from polleria_app.printing.tickets import imprimir_pedido
 
@@ -26,12 +30,17 @@ STATIC_DIR = BASE_DIR / "static"
 # APP
 # =========================
 
-app = FastAPI(title="Pollería App", version="1.0")
+app = FastAPI(title="Pollería App", version="2.0")
+
+# Asegurar que la BD existe al arrancar
+@app.on_event("startup")
+def on_startup():
+    db.init_db()
 
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
-# CORS (por si mañana metes tablets, móviles, wifi local)
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -45,10 +54,8 @@ app.add_middleware(
 # =========================
 
 class ItemPedido(BaseModel):
-    nombre: str
-    precio: float
+    id: int # ID del producto
     cantidad: int
-
 
 class PedidoCreate(BaseModel):
     items: List[ItemPedido]
@@ -58,38 +65,20 @@ class PedidoCreate(BaseModel):
 
 
 # =========================
-# "BD" EN MEMORIA
-# =========================
-
-pedidos: List[dict] = []
-_next_id = 1
-
-
-def _find_pedido(pedido_id: int) -> dict:
-    for p in pedidos:
-        if p["id"] == pedido_id:
-            return p
-    raise HTTPException(status_code=404, detail="Pedido no encontrado")
-
-
-# =========================
-# VISTAS
+# VISTAS (FRONTEND)
 # =========================
 
 @app.get("/", include_in_schema=False)
 def root():
     return RedirectResponse(url="/mostrador")
 
-
 @app.get("/mostrador", response_class=HTMLResponse, include_in_schema=False)
 def vista_mostrador(request: Request):
     return templates.TemplateResponse("mostrador.html", {"request": request})
 
-
 @app.get("/pollos", response_class=HTMLResponse, include_in_schema=False)
 def vista_pollos(request: Request):
     return templates.TemplateResponse("zona_pollos.html", {"request": request})
-
 
 @app.get("/tele_cliente", response_class=HTMLResponse, include_in_schema=False)
 def vista_tele_cliente(request: Request):
@@ -100,17 +89,11 @@ def vista_tele_cliente(request: Request):
 # API PRODUCTOS
 # =========================
 
+from polleria_app.database import db
+
 @app.get("/api/productos")
 def listar_productos():
-    return [
-        {"id": 1, "nombre": "Pollo entero", "precio": 12.00},
-        {"id": 2, "nombre": "Medio pollo", "precio": 6.50},
-        {"id": 3, "nombre": "Patatas grandes", "precio": 3.50},
-        {"id": 4, "nombre": "Croquetas de toro", "precio": 4.00},
-        {"id": 5, "nombre": "Sticks de queso", "precio": 3.80},
-        {"id": 6, "nombre": "Coca-Cola", "precio": 2.00},
-        {"id": 7, "nombre": "Barra de pan", "precio": 1.00},
-    ]
+    return db.get_productos()
 
 
 # =========================
@@ -119,69 +102,93 @@ def listar_productos():
 
 @app.get("/api/pedidos")
 def listar_pedidos():
-    return pedidos
-
+    return db.get_pedidos()
 
 @app.post("/api/pedidos")
 def crear_pedido(payload: PedidoCreate, background_tasks: BackgroundTasks):
-    global _next_id
+    
+    # 1. Validar y preparar items con precio real de BD (SEGURIDAD)
+    items_para_guardar = []
+    
+    for item in payload.items:
+        prod = db.get_producto_by_id(item.id)
+        if not prod:
+            raise HTTPException(status_code=400, detail=f"Producto ID {item.id} no existe")
+            
+        items_para_guardar.append((
+            prod["id"],           # ID Producto
+            item.cantidad,        # Cantidad
+            prod["precio"],       # Precio Real (Snapshot)
+            prod["nombre"]        # Nombre Real (Snapshot)
+        ))
+    
+    if not items_para_guardar:
+        raise HTTPException(status_code=400, detail="El pedido no tiene items validos")
 
-    nuevo = {
-        "id": _next_id,
-        "items": [item.dict() for item in payload.items],
-        "estado": "pendiente",
-        "nombre": payload.nombre,
-        "telefono": payload.telefono,
-        "hora": payload.hora,
-        "canal": "MOSTRADOR",
-        "fecha": datetime.now().isoformat(timespec="minutes")
-    }
-
-    pedidos.append(nuevo)
-    _next_id += 1
-
-    # 🧾 IMPRESIÓN (NO BLOQUEA API)
+    # 2. Guardar en BD (Transaccional)
     try:
+        nuevo_pedido = db.create_pedido(
+            nombre=payload.nombre,
+            telefono=payload.telefono,
+            hora=payload.hora,
+            items=items_para_guardar
+        )
+    except Exception as e:
+        print("❌ Error guardando pedido:", e)
+        raise HTTPException(status_code=500, detail="Error interno guardando pedido")
+
+    # 3. IMPRESIÓN (Background)
+    try:
+        # Convertimos al formato que espera imprimir_pedido (lista de dicts)
+        items_impresion = [
+            {"nombre": i[3], "cantidad": i[1]} for i in items_para_guardar
+        ]
+        
         background_tasks.add_task(
             imprimir_pedido,
-            nuevo["id"],
-            nuevo["items"],
-            nuevo["hora"],
-            nuevo["nombre"],
-            nuevo["telefono"]
+            pedido_id=nuevo_pedido["id"],
+            items=items_impresion,
+            hora=nuevo_pedido["hora_recogida"], # Ojo: en BD es hora_recogida
+            nombre=nuevo_pedido["nombre_cliente"], # Ojo: en BD es nombre_cliente
+            telefono=nuevo_pedido["telefono"]
         )
     except Exception as e:
         print("❌ Error lanzando impresión:", e)
 
-    return nuevo
+    return nuevo_pedido
 
 
 @app.get("/api/pedidos/{pedido_id}")
 def obtener_pedido(pedido_id: int):
-    return _find_pedido(pedido_id)
+    p = db.get_pedido_completo(pedido_id)
+    if not p:
+        raise HTTPException(status_code=404, detail="Pedido no encontrado")
+    return p
 
 
 @app.post("/api/pedidos/{pedido_id}/listo")
 def marcar_listo(pedido_id: int):
-    p = _find_pedido(pedido_id)
-    p["estado"] = "listo"
+    if not db.get_pedido_completo(pedido_id):
+         raise HTTPException(status_code=404, detail="Pedido no encontrado")
+    db.update_pedido_estado(pedido_id, "listo")
     return {"ok": True}
 
 
 @app.post("/api/pedidos/{pedido_id}/entregado")
 def marcar_entregado(pedido_id: int):
-    p = _find_pedido(pedido_id)
-    p["estado"] = "entregado"
+    if not db.get_pedido_completo(pedido_id):
+         raise HTTPException(status_code=404, detail="Pedido no encontrado")
+    db.update_pedido_estado(pedido_id, "entregado")
     return {"ok": True}
 
 
 # =========================
-# RESET DEMO
+# RESET (SOLO LIMPIA, YA NO REINICIA MEMORIA)
 # =========================
 
 @app.post("/api/reset")
 def reset_demo():
-    global pedidos, _next_id
-    pedidos = []
-    _next_id = 1
-    return {"ok": True}
+    # TODO: Implementar borrado de tabla pedidos si se desea
+    # Por seguridad, ahora no borramos nada
+    return {"ok": True, "message": "Reset desactivado por seguridad"}
+

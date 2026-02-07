@@ -1,15 +1,20 @@
 from escpos.printer import Usb
 from datetime import datetime
-
-# TU IMPRESORA
-VENDOR_ID = 0x0456
-PRODUCT_ID = 0x0808
-
+from polleria_app.config import (
+    PRINTER_VENDOR_ID, PRINTER_PRODUCT_ID, 
+    PRINTER_TIMEOUT, PRINTER_IN_EP, PRINTER_OUT_EP
+)
 
 def imprimir_pedido(pedido_id, items, hora=None, nombre="", telefono=""):
 
     try:
-        printer = Usb(VENDOR_ID, PRODUCT_ID, timeout=0, in_ep=0x82, out_ep=0x01)
+        printer = Usb(
+            PRINTER_VENDOR_ID, 
+            PRINTER_PRODUCT_ID, 
+            timeout=PRINTER_TIMEOUT, 
+            in_ep=PRINTER_IN_EP, 
+            out_ep=PRINTER_OUT_EP
+        )
 
 
         printer.set(align="center", bold=True, width=2, height=2)

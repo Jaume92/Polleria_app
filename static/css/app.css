@@ -1,187 +1,312 @@
-:root{
-  --bg:#ffffff;
-  --panel:#fff7ee;
-  --orange:#ff8c1a;
-  --orange-dark:#e67300;
-  --green:#2ecc71;
-  --red:#e74c3c;
-  --text:#222;
-  --muted:#777;
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500;700;900&display=swap');
+
+:root {
+    --bg-dark: #121212;
+    --bg-panel: #1e1e1e;
+    --text-light: #ffffff;
+    --text-dark: #000000;
+
+    /* VIBRANT COLORS (Ref. Imagen) */
+    --cat-yellow: #f1c40f;
+    --cat-orange: #e67e22;
+    --cat-pink: #ff9ff3;
+    --cat-blue: #54a0ff;
+
+    --prod-green: #2ecc71;
+    /* Verde brillante productos */
+
+    /* Acciones */
+    --btn-confirm: #00b894;
+    --btn-cancel: #d63031;
+    --btn-delete: #636e72;
+
+    --border: #333;
+    --radius: 6px;
 }
 
-*{
-  box-sizing:border-box;
-  font-family:system-ui, Arial, sans-serif;
+* {
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+    user-select: none;
 }
-
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-}
-
-/* ================= HEADER ================= */
-
-.brand-bar{
-  background:var(--orange);
-  color:white;
-  padding:14px 20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-weight:800;
-  font-size:20px;
-}
-
-.brand-title{
-  letter-spacing:1px;
-}
-
-/* ================= LAYOUT ================= */
-
-.container{
-  display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap:15px;
-  padding:15px;
-}
-
-.panel{
-  background:var(--panel);
-  border-radius:12px;
-  padding:15px;
-  box-shadow:0 4px 12px rgba(0,0,0,.08);
-}
-
-.panel h2{
-  margin-top:0;
-  color:var(--orange-dark);
-}
-
-/* ================= INPUTS ================= */
-
-.inputs{
-  padding:15px;
-  display:grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap:10px;
-}
-
-.inputs input{
-  padding:10px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  font-size:16px;
-}
-
-/* ================= BUTTONS ================= */
-
-button{
-  border:none;
-  border-radius:8px;
-  padding:12px;
-  font-size:16px;
-  font-weight:700;
-  cursor:pointer;
-}
-
-.confirmar{
-  background:var(--green);
-  color:white;
-}
-
-.limpiar{
-  background:var(--red);
-  color:white;
-}
-
-/* ================= PRODUCTOS ================= */
-
-.producto-btn{
-  width:100%;
-  margin-bottom:8px;
-  background:white;
-  border:2px solid var(--orange);
-  color:var(--text);
-}
-
-.producto-btn:hover{
-  background:var(--orange);
-  color:white;
-}
-
-/* ================= PEDIDO ================= */
-
-.pedido-item{
-  padding:8px;
-  border-bottom:1px dashed #ccc;
-  font-size:16px;
-}
-
-/* ================= ZONA POLLOS ================= */
-
-.pedido-cocina{
-  background:white;
-  border:2px solid var(--orange);
-  border-radius:10px;
-  padding:10px;
-  margin-bottom:10px;
-}
-
-/* ================= TELE CLIENTE ================= */
-
-.turno{
-  font-size:48px;
-  font-weight:900;
-  color:var(--orange-dark);
-  text-align:center;
-  margin:20px 0;
-}
-
-/* ================= MOBILE ================= */
-
-@media(max-width:800px){
-  .container{
-    grid-template-columns:1fr;
-  }
-
-  .inputs{
-    grid-template-columns:1fr;
-  }
-}
-
-
-/* ========================= */
-/* FORZAR FONDO BLANCO */
-/* ZONA POLLOS + TELE */
-/* ========================= */
 
 body {
-  background: #ffffff !important;
+    margin: 0;
+    background: var(--bg-dark);
+    color: var(--text-light);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
 }
 
-/* Si tienes wrappers */
+/* =========================================
+   LAYOUT 70% | 30%
+   ========================================= */
 
-.screen,
-.frame,
-.container {
-  background: #ffffff !important;
+.tpv-container {
+    display: grid;
+    grid-template-columns: 70% 30%;
+    /* Estricto */
+    width: 100%;
+    height: 100%;
 }
 
-/* Header sigue naranja (branding) */
+/* =========================================
+   LEFT PANEL (70%)
+   ========================================= */
 
-.brand-bar {
-  background: var(--orange) !important;
+.selection-zone {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-right: 4px solid #000;
+    background: #111;
 }
 
-/* Zona Pollos fondo limpio */
-
-#pedidos-zona-pollos {
-  background: #ffffff !important;
+/* -- Categorías (Top) -- */
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
+    max-height: 30vh;
+    /* 30% altura */
+    min-height: 120px;
+    overflow-y: auto;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #333;
 }
 
-/* Tele Cliente fondo limpio */
+.cat-btn {
+    background: var(--cat-yellow);
+    /* Default */
+    color: #000;
+    border: none;
+    border-radius: var(--radius);
+    padding: 15px 5px;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.1;
+    transition: transform 0.1s;
+}
 
-.turno {
-  background: #fff7ee !important;
+/* Variación de colores pseudo-aleatoria estática usando nth-child */
+.cat-btn:nth-child(4n+1) {
+    background: var(--cat-yellow);
+}
+
+.cat-btn:nth-child(4n+2) {
+    background: var(--cat-orange);
+}
+
+.cat-btn:nth-child(4n+3) {
+    background: var(--cat-pink);
+}
+
+.cat-btn:nth-child(4n+4) {
+    background: var(--cat-blue);
+    color: white;
+}
+
+.cat-btn.active {
+    filter: brightness(1.2);
+    transform: translateY(2px);
+    box-shadow: inset 0 0 0 4px #000;
+    /* Borde interior negro para marcar activo */
+}
+
+/* -- Productos (Bottom) -- */
+.products-area {
+    flex: 1;
+    overflow-y: auto;
+    background: #000;
+    /* Fondo negro puro */
+    border-radius: var(--radius);
+    padding: 5px;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
+}
+
+.prod-card {
+    background: var(--prod-green);
+    color: #000;
+    border-radius: var(--radius);
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.2);
+    padding: 5px;
+    transition: transform 0.05s;
+}
+
+.prod-card:active {
+    transform: translateY(2px);
+    box-shadow: none;
+}
+
+.prod-name {
+    font-weight: 700;
+    font-size: 1rem;
+    text-align: center;
+    line-height: 1.1;
+    margin-bottom: 4px;
+}
+
+.prod-price {
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 900;
+    font-size: 1.1rem;
+}
+
+
+/* =========================================
+   RIGHT PANEL (30%)
+   ========================================= */
+
+.control-zone {
+    background: #2d3436;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.tpv-header h2 {
+    margin: 0 0 10px 0;
+    color: #dfe6e9;
+    text-align: center;
+    border-bottom: 1px solid #555;
+    padding-bottom: 5px;
+    font-size: 1.1rem;
+}
+
+/* Ticket */
+.ticket-list {
+    flex: 1;
+    background: #fff;
+    /* Papel blanco */
+    color: #000;
+    padding: 2px;
+    overflow-y: auto;
+    font-family: monospace;
+    border: 2px solid #555;
+    margin-bottom: 10px;
+}
+
+.ticket-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 5px;
+    border-bottom: 1px dashed #ccc;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.btn-x {
+    color: white;
+    background: red;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Footer Controls */
+.control-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.total-display {
+    background: #000;
+    color: var(--cat-yellow);
+    font-size: 3rem;
+    text-align: right;
+    padding: 10px;
+    font-weight: 900;
+    border: 2px solid #555;
+}
+
+.inputs-row input {
+    width: 100%;
+    padding: 12px;
+    background: #fff;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: black;
+}
+
+.action-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    height: 120px;
+}
+
+.btn-big {
+    border: none;
+    border-radius: var(--radius);
+    color: white;
+    font-weight: 900;
+    font-size: 1.2rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+.btn-big:active {
+    transform: translateY(4px);
+    box-shadow: none;
+}
+
+.btn-cobrar {
+    background: var(--btn-confirm);
+    grid-column: span 2;
+    font-size: 2rem;
+}
+
+.btn-limpiar {
+    background: var(--btn-cancel);
+}
+
+.btn-borrar {
+    background: var(--btn-delete);
+}
+
+/* SCROLLBARS */
+::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 6px;
+    border: 2px solid #333;
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+    .tpv-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 400px;
+    }
 }
